@@ -134,11 +134,11 @@ class Predictor:
             idxes = [idx for idx, label in enumerate(self.__predicted_labels)
                      if label in filter_predictions]
             self.labels_to_visualize = np.array([self.__predicted_labels[i]
-                                            for i in idxes])
+                                                for i in idxes])
             self.boxes_to_visualize = np.array([self.predicted_boxes[i]
-                                           for i in idxes])
+                                                for i in idxes])
             self.scores_to_visualize = np.array([self.__predicted_scores[i]
-                                            for i in idxes])
+                                                for i in idxes])
 
         drawn_objects_counter = 0
         labels_dict = {}
@@ -159,19 +159,23 @@ class Predictor:
                                       (255, 0, 255), 1)
             font = cv2.FONT_HERSHEY_SIMPLEX
             cv2.putText(img_boxes, f'{drawn_objects_counter}: {label}',
-                        (xmin, ymax-10), font, 0.5, (0, 255, 0), 1, cv2.LINE_AA)
+                        (xmin, ymax-10), font, 0.5, (0, 255, 0), 1,
+                        cv2.LINE_AA)
             # cv2.putText(img_boxes, score_txt, (xmax, ymax-10), font, 0.5,
             #             (255, 0, 0), 1, cv2.LINE_AA)
 
             labels_dict[drawn_objects_counter] = label
-            scores_dict[drawn_objects_counter] = score
-            boxes_dict[drawn_objects_counter] = ({'ymin': ymin, 'xmin': xmin,
-                               'ymax': ymax, 'xmax': xmax})
+            scores_dict[drawn_objects_counter] = float(score)
+            boxes_dict[drawn_objects_counter] = ({'ymin': int(ymin),
+                                                  'xmin': int(xmin),
+                                                  'ymax': int(ymax),
+                                                  'xmax': int(xmax)})
             drawn_objects_counter += 1
         print(f'Number of objects drawn: {drawn_objects_counter}')
 
-        img_boxes_rgb = img_boxes[:,:,::-1]
-        img_boxes_str = base64.b64encode(cv2.imencode('.jpg', img_boxes_rgb)[1]).decode()
+        img_boxes_rgb = img_boxes[:, :, ::-1]
+        img_boxes_str = base64.b64encode(cv2.imencode(
+                                         '.jpg', img_boxes_rgb)[1]).decode()
 
         prediction_response = {
             'img': img_boxes_str,

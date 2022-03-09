@@ -4,8 +4,7 @@ import io
 import cv2
 import numpy as np
 import tensorflow as tf
-from PIL import Image
-#from imageio import imread
+
 
 class ImagePreprocessor:
     """
