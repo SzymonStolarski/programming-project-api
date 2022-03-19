@@ -1,17 +1,10 @@
 from fastapi import FastAPI
-from pydantic import BaseModel
-from typing import Optional
+import pandas as pd
 import uvicorn
 
 from src.image_preprocessing.image_preprocessor import ImagePreprocessor
 from src.predictor.predictor import Predictor
-
-
-class PredictionInput(BaseModel):
-    img_base64: str
-    model_name: str
-    min_score: Optional[float] = 0.4
-    filter_predictions: Optional[list[str]] = None
+from src.data_models.prediction_input import PredictionInput
 
 
 img_preprocessor = ImagePreprocessor()
@@ -19,8 +12,10 @@ efficientdet_lite4_model = Predictor('efficientdet_lite4')
 efficientdet_lite2_model = Predictor('efficientdet_lite2')
 efficientdet_lite4_model.load_model()
 efficientdet_lite2_model.load_model()
-model_dictionary = {'efficientdet_lite4': efficientdet_lite4_model,
-                    'efficientdet_lite2': efficientdet_lite2_model}
+model_dictionary = {'EfficientDet-Lite4': efficientdet_lite4_model,
+                    'EfficientDet-Lite2': efficientdet_lite2_model}
+available_labels = pd.read_csv('src/models/image_labels.csv',
+                               sep=';', index_col='ID')['OBJECT (2017 REL.)']
 
 app = FastAPI()
 
@@ -44,6 +39,16 @@ def predict_static_image(input_data: PredictionInput):
                                               )
 
     return pred_response
+
+
+@app.get("/available_models")
+def get_available_models():
+    return {'available_models': list(model_dictionary.keys())}
+
+
+@app.get("/available_labels")
+def get_available_labels():
+    return {'available_labels': set(available_labels)}
 
 
 uvicorn.run(app)
