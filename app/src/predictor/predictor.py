@@ -173,9 +173,9 @@ class Predictor:
             drawn_objects_counter += 1
         print(f'Number of objects drawn: {drawn_objects_counter}')
 
-        img_boxes_rgb = img_boxes[:, :, ::-1]
+        #img_boxes_rgb = img_boxes[:, :, ::-1]
         img_boxes_str = base64.b64encode(cv2.imencode(
-                                         '.jpg', img_boxes_rgb)[1]).decode()
+                                         '.jpg', img_boxes)[1]).decode()
 
         prediction_response = {
             'img': img_boxes_str,
