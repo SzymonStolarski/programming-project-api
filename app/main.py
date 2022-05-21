@@ -141,4 +141,4 @@ def get_available_labels():
     return {'available_labels': set(available_labels)}
 
 
-uvicorn.run(app)
+# uvicorn.run(app)
